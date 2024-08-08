@@ -1,55 +1,88 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Image Sequence Scroll</title>
-        <style>
-            body {
-                margin: 0;
-                height: 12000px; /* To enable scrolling */
-                display: flex;
-                align-items: center;
-                justify-content: center;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Sequence Scroll with Parallax</title>
+    <style>
+        body {
+            margin: 0;
+            height: 12000px; /* To enable scrolling */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, #1e3c72, #2a5298); /* Gradient background */
+            background-attachment: fixed;
+        }
+
+        .image-sequence {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 400px;
+            width: auto;
+            z-index: 10; /* Ensure it stays above the background */
+        }
+
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #1e3c72, #2a5298); /* Same gradient background */
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="parallax-bg"></div>
+    <img id="image-sequence" class="image-sequence" src="woman-walking/woman_00.png" alt="Walking Woman">
+
+    <script>
+        const imageSequence = document.getElementById('image-sequence');
+        const parallaxBg = document.querySelector('.parallax-bg');
+        const totalFrames = 35; // Updated to 35 frames
+        const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
+    
+        let currentFrame = 0;
+        let lastScrollTop = 0;
+    
+        function updateFrame() {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
+    
+            // Check if the user is at the bottom or top of the page and reset scroll
+            if (scrollTop >= maxScrollTop - 1) {
+                window.scrollTo(0, 1);  // Jump back to the top when reaching the bottom
+            } else if (scrollTop <= 0) {
+                window.scrollTo(0, maxScrollTop - 2);  // Jump to the bottom when reaching the top
             }
-
-            .image-sequence {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                height: 400px;
-                width: auto;
+    
+            const scrollFraction = scrollTop / maxScrollTop;
+            let newFrameIndex = Math.floor(scrollFraction * totalFrames);
+    
+            // Loop the frame index to create a seamless loop
+            newFrameIndex = newFrameIndex % totalFrames;
+    
+            if (newFrameIndex !== currentFrame) {
+                currentFrame = newFrameIndex;
+                imageSequence.src = framePath(currentFrame);
             }
-        </style>
-    </head>
-    <body>
-
-        <img id="image-sequence" class="image-sequence" src="woman-walking/woman_00.png" alt="Walking Woman">
-
-        <script>
-            const imageSequence = document.getElementById('image-sequence');
-            const totalFrames = 20; // Adjust this if you have more or fewer frames
-            const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
-
-            let currentFrame = 0;
-
-            window.addEventListener('scroll', () => {
-                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-                const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
-
-                const scrollFraction = scrollTop / maxScrollTop;
-                const frameIndex = Math.min(
-                    totalFrames - 1,
-                    Math.floor(scrollFraction * totalFrames)
-                );
-
-                if (frameIndex !== currentFrame) {
-                    currentFrame = frameIndex;
-                    imageSequence.src = framePath(currentFrame);
-                }
-            });
-        </script>
-
-    </body>
-    </html>
+    
+            // Move the background to create parallax effect
+            const parallaxSpeed = -0.5; // Adjust the speed of the parallax effect
+            parallaxBg.style.backgroundPositionX = `${scrollTop * parallaxSpeed}px`;
+    
+            requestAnimationFrame(updateFrame);
+        }
+    
+        window.addEventListener('load', () => {
+            updateFrame();
+        });
+    </script>
+    
+</body>
+</html>

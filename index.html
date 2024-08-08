@@ -1,0 +1,55 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Image Sequence Scroll</title>
+        <style>
+            body {
+                margin: 0;
+                height: 12000px; /* To enable scrolling */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .image-sequence {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                height: 400px;
+                width: auto;
+            }
+        </style>
+    </head>
+    <body>
+
+        <img id="image-sequence" class="image-sequence" src="woman-walking/woman_00.png" alt="Walking Woman">
+
+        <script>
+            const imageSequence = document.getElementById('image-sequence');
+            const totalFrames = 20; // Adjust this if you have more or fewer frames
+            const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
+
+            let currentFrame = 0;
+
+            window.addEventListener('scroll', () => {
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
+
+                const scrollFraction = scrollTop / maxScrollTop;
+                const frameIndex = Math.min(
+                    totalFrames - 1,
+                    Math.floor(scrollFraction * totalFrames)
+                );
+
+                if (frameIndex !== currentFrame) {
+                    currentFrame = frameIndex;
+                    imageSequence.src = framePath(currentFrame);
+                }
+            });
+        </script>
+
+    </body>
+    </html>

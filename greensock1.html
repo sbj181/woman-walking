@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Scroll with GSAP</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-y: scroll; /* Enable vertical scrolling */
+            background-color: #000; /* Fallback background color */
+        }
+
+        .scroll-container {
+            width: 490vw; /* Adjusted to 6 sections, each taking up 95% of the viewport width */
+            height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        .background-section {
+            width: 95vw; /* Each section takes up 95% of the viewport width */
+            height: 100vh;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .image-panel {
+            position: relative;
+            width: 95vw;
+            height: 85vh;
+            overflow: hidden;
+            flex: 0 0 auto;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+
+        .image-sequence {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 40vw;
+            width: auto;
+            z-index: 100; /* Ensure it stays above the background sections */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Image Sequence -->
+    <img id="image-sequence" class="image-sequence" src="woman-walking/woman_00.png" alt="Walking Woman">
+
+    <!-- Horizontal Scroll Container -->
+    <div class="scroll-container" id="scroll-container">
+        <div class="background-section">
+            <div class="image-panel">
+                <img class="background-image" src="parallax-bg/bg1-unsplash.jpg" alt="Background 1">
+            </div>
+        </div>
+        <div class="background-section">
+            <div class="image-panel">
+                <img class="background-image" src="parallax-bg/bg2-unsplash.jpg" alt="Background 2">
+            </div>
+        </div>
+        <div class="background-section">
+            <div class="image-panel">
+                <img class="background-image" src="parallax-bg/bg3-unsplash.jpg" alt="Background 3">
+            </div>
+        </div>
+        <div class="background-section">
+            <div class="image-panel">
+                <img class="background-image" src="parallax-bg/bg4-unsplash.jpg" alt="Background 4">
+            </div>
+        </div>
+        <div class="background-section">
+            <div class="image-panel">
+                <img class="background-image" src="parallax-bg/bg5-unsplash.jpg" alt="Background 5">
+            </div>
+        </div>
+        <div class="background-section">
+            <div class="image-panel">
+                <img class="background-image" src="parallax-bg/bg6-unsplash.jpg" alt="Background 6">
+            </div>
+        </div>
+    </div>
+
+    <!-- Include GSAP and ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+
+    <script>
+        // Image Sequence Logic
+        const imageSequence = document.getElementById('image-sequence');
+        const totalFrames = 35;
+        const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
+
+        let currentFrame = 0;
+
+        function updateFrame(progress) {
+            let newFrameIndex = Math.floor(progress * totalFrames);
+
+            if (newFrameIndex !== currentFrame && newFrameIndex < totalFrames) {
+                currentFrame = newFrameIndex;
+                imageSequence.src = framePath(currentFrame);
+            }
+        }
+
+        // GSAP & ScrollTrigger Logic
+        gsap.registerPlugin(ScrollTrigger);
+
+        const scrollTween = gsap.to("#scroll-container", {
+            xPercent: -95, // Adjust based on 6 sections (5 transitions of 95% each)
+            ease: "power3.inOut",
+            scrollTrigger: {
+                trigger: "#scroll-container",
+                pin: true,
+                scrub: 1,
+                end: "+=6000", // Keep this as it was working well
+                onUpdate: (self) => {
+                    updateFrame(self.progress);
+                }
+            }
+        });
+
+        // Apply Parallax effect to images
+        /* document.querySelectorAll('.background-image').forEach((img, i) => {
+            const initialX = i === 0 ? "0vw" : "-20vw"; // Set initial position for the first image to avoid bounce
+            gsap.fromTo(img, {
+                x: initialX
+            }, {
+                x: "20vw",
+                scrollTrigger: {
+                    trigger: img.parentNode, // each section
+                    containerAnimation: scrollTween,
+                    start: "left right",
+                    end: "right left",
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                },
+            });
+        }); */
+    </script>
+
+</body>
+</html>

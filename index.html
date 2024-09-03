@@ -1,99 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Sequence Scroll with Parallax</title>
-    <style>
-        body {
-            margin: 0;
-            height: 12000px; /* To enable scrolling */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(to right, #1e3c72, #2a5298); /* Gradient background */
-            background-attachment: fixed;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .image-sequence {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            height: 400px;
-            width: auto;
-            z-index: 10; /* Ensure it stays above the background */
+<title>Horizontal Scroll Example</title>
+
+<style>
+    :root {
+        /* Primary Colors */
+        --scope-text: #003b5c; /* Scope Text-Color for Text/Paragraphs */
+        --scope-primary: #008fb4; /* Primary colors */
+
+        /* Gradients */
+        --scope-gradients-dark-color-left: #003b5c; /* Dark Gradient - Left */
+        --scope-gradients-dark-color-right: #008fb4; /* Dark Gradient - Right */
+
+        /* Additional Colors */
+        --color-bg-light: #f5f6fa; /* Background Light */
+        --color-gray-dark: #595454; /* Dark Gray */
+        --color-red: #dc3545; /* Accent (Red) */
+        --color-accent: #f26425; /* Accent (Orange) */
+        --color-bg-accent-light: #d3e6ef; /* Accent Light (Background) */
+
+        /* Custom Color */
+        --bmspurple: #be2bbb; /* BMS Purple */
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Montserrat', Arial, sans-serif, sans-serif;
+        background-color: var(--scope-gradients-dark-color-left);
+        color: white;
+        overflow-x: hidden;
+    }
+    h1 {
+        font-size: 1.5em;
+        @media (min-width: 50em) {
+            font-size: 2em;
         }
-        .floor {
-            height: 31%;
-            position: fixed;
-            bottom: 0px;
-            width: 100%;
-            background-size: cover;
-            background-position: center;
-            background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Isolation_Mode' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3933.28 1107.1'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:none;stroke:%23000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.2px;%7D%3C/style%3E%3C/defs%3E%3Cpolyline class='cls-1' points='.6 409.4 258.31 409.43 521.39 409.47 784.48 409.5 1047.58 409.54 1310.69 409.57 1573.81 409.6 1836.95 409.64 2100.1 409.67 2363.26 409.71 2626.43 409.74 2889.61 409.77 3152.81 409.81 3416.01 409.84 3679.23 409.88 3932.68 409.91'/%3E%3Cpolyline class='cls-1' points='235.79 1106.5 372.7 932.58 500.34 770.44 826.56 770.49 1152.8 770.54 1479.05 770.6 1805.33 770.65 2131.62 770.7 2457.93 770.75 2784.26 770.81 3110.61 770.86 3436.97 770.91 3564.64 933.14 3701.07 1106.5'/%3E%3Cpolyline class='cls-1' points='.6 237.51 220.73 237.53 315.19 165.53 535.61 165.55 609.09 100.93 818.22 100.96 874.33 42.63 1073.27 42.65 1106.37 .6'/%3E%3Cpolyline class='cls-1' points='620.82 1106.5 727.27 932.65 1081.87 932.71 1436.49 932.77 1791.12 932.83 2145.78 932.9 2500.46 932.96 2855.17 933.02 3209.89 933.08 3316.03 1106.5'/%3E%3Cpolyline class='cls-1' points='.6 100.87 190.85 100.89 277.56 42.57 476.47 42.59 531.57 .6'/%3E%3Cpolyline class='cls-1' points='1005.85 1106.5 1081.87 932.71 1152.8 770.54 1213.23 632.4 1265.32 513.3 1310.69 409.57 1350.56 318.41 1385.88 237.67 1417.38 165.65 1445.65 101.02 1471.16 42.7 1489.58 .6'/%3E%3Cpolyline class='cls-1' points='1390.88 1106.5 1436.49 932.77 1479.05 770.6 1515.32 632.44 1546.58 513.34 1573.81 409.6 1597.74 318.44 1618.94 237.69 1637.84 165.67 1654.81 101.04 1670.12 42.72 1681.17 .6'/%3E%3Cpolyline class='cls-1' points='1775.91 1106.5 1791.12 932.83 1805.33 770.65 1817.43 632.49 1827.86 513.38 1836.95 409.64 1844.93 318.47 1852.01 237.72 1858.31 165.7 1863.98 101.06 1869.09 42.74 1872.77 .6'/%3E%3Cpolyline class='cls-1' points='.6 770.36 174.14 770.39 307.03 632.26 421.6 513.18 521.39 409.47 609.09 318.32 686.76 237.59 756.04 165.58 976.48 165.6 1196.93 165.63 1417.38 165.65 1637.84 165.67 1858.31 165.7 2078.8 165.72 2299.28 165.75 2519.78 165.77 2740.29 165.79 2960.8 165.82 3181.31 165.84 3250.61 237.88 3328.3 318.65 3416.01 409.84 3515.83 513.61 3630.42 632.76 3763.35 770.96 3932.68 770.99'/%3E%3Cpolyline class='cls-1' points='.6 405.32 114.82 318.26 361.95 318.29 609.09 318.32 856.23 318.35 1103.39 318.38 1350.56 318.41 1597.74 318.44 1844.93 318.47 2092.14 318.5 2339.35 318.53 2586.57 318.56 2833.81 318.59 3081.05 318.62 3328.3 318.65 3575.57 318.68 3822.84 318.71 3932.68 402.45'/%3E%3Cpolyline class='cls-1' points='.6 513.13 140.39 513.14 258.31 409.43 361.95 318.29 453.74 237.56 686.76 237.59 919.79 237.61 1152.83 237.64 1385.88 237.67 1618.94 237.69 1852.01 237.72 2085.08 237.75 2318.17 237.77 2551.27 237.8 2784.37 237.83 3017.49 237.85 3250.61 237.88 3483.75 237.91 3575.57 318.68 3679.23 409.88 3797.2 513.65 3932.68 513.67'/%3E%3Cpolyline class='cls-1' points='.6 318.25 114.82 318.26 220.73 237.53 453.74 237.56 535.61 165.55 756.04 165.58 818.22 100.96 1027.35 100.98 1073.27 42.65 1272.21 42.68 1297.97 .6'/%3E%3Cpolyline class='cls-1' points='.6 228.85 94.78 165.51 315.19 165.53 399.97 100.91 609.09 100.93 675.4 42.61 874.33 42.63 914.77 .6'/%3E%3Cpolyline class='cls-1' points='.6 165.5 94.78 165.51 190.85 100.89 399.97 100.91 476.47 42.59 675.4 42.61 723.17 .6'/%3E%3Cpolyline class='cls-1' points='.6 89.52 78.65 42.55 277.56 42.57 339.97 .6'/%3E%3Cpolyline class='cls-1' points='3788.78 .6 3859.11 42.93 3932.68 42.93'/%3E%3Cpolyline class='cls-1' points='.6 42.55 78.65 42.55 148.37 .6'/%3E%3Cpolyline class='cls-1' points='3597.18 .6 3660.08 42.91 3859.11 42.93 3932.68 87.21'/%3E%3Cpolyline class='cls-1' points='3405.59 .6 3461.06 42.89 3660.08 42.91 3746.82 101.26 3932.68 101.28'/%3E%3Cpolyline class='cls-1' points='3213.98 .6 3262.03 42.87 3461.06 42.89 3537.59 101.24 3746.82 101.26 3842.94 165.91 3932.68 165.92'/%3E%3Cpolyline class='cls-1' points='3022.38 .6 3063.01 42.85 3262.03 42.87 3328.36 101.21 3537.59 101.24 3622.39 165.89 3842.94 165.91 3932.68 226.28'/%3E%3Cpolyline class='cls-1' points='2830.78 .6 2864.01 42.83 3063.01 42.85 3119.14 101.19 3328.36 101.21 3401.85 165.87 3622.39 165.89 3716.89 237.93 3932.68 237.96'/%3E%3Cpolyline class='cls-1' points='2639.18 .6 2665.01 42.81 2864.01 42.83 2909.92 101.17 3119.14 101.19 3181.31 165.84 3401.85 165.87 3483.75 237.91 3716.89 237.93 3822.84 318.71 3932.68 318.72'/%3E%3Cpolyline class='cls-1' points='2447.58 .6 2466.02 42.79 2491.52 101.13 2519.78 165.77 2551.27 237.8 2586.57 318.56 2626.43 409.74 2671.78 513.5 2723.85 632.62 2784.26 770.81 2855.17 933.02 2931 1106.5'/%3E%3Cpolyline class='cls-1' points='2255.98 .6 2267.03 42.77 2282.33 101.11 2299.28 165.75 2318.17 237.77 2339.35 318.53 2363.26 409.71 2390.46 513.46 2421.7 632.58 2457.93 770.75 2500.46 932.96 2545.98 1106.5'/%3E%3Cpolyline class='cls-1' points='2064.38 .6 2068.05 42.76 2073.15 101.09 2078.8 165.72 2085.08 237.75 2092.14 318.5 2100.1 409.67 2109.16 513.42 2119.55 632.53 2131.62 770.7 2145.78 932.9 2160.94 1106.5'/%3E%3Cpolyline class='cls-1' points='.6 950.76 18.14 932.52 372.7 932.58 727.27 932.65 826.56 770.49 911.14 632.35 984.06 513.26 1047.58 409.54 1103.39 318.38 1152.83 237.64 1196.93 165.63 1236.5 101 1272.21 42.68 1471.16 42.7 1670.12 42.72 1869.09 42.74 2068.05 42.76 2267.03 42.77 2466.02 42.79 2665.01 42.81 2700.72 101.15 2740.29 165.79 2784.37 237.83 2833.81 318.59 2889.61 409.77 2953.12 513.54 3026.03 632.67 3110.61 770.86 3209.89 933.08 3564.64 933.14 3919.41 933.21 3932.68 947'/%3E%3Cpolyline class='cls-1' points='.6 932.52 18.14 932.52 174.14 770.39 500.34 770.44 609.08 632.31 702.83 513.22 784.48 409.5 856.23 318.35 919.79 237.61 976.48 165.6 1027.35 100.98 1236.5 101 1445.65 101.02 1654.81 101.04 1863.98 101.06 2073.15 101.09 2282.33 101.11 2491.52 101.13 2700.72 101.15 2909.92 101.17 2960.8 165.82 3017.49 237.85 3081.05 318.62 3152.81 409.81 3234.47 513.57 3328.21 632.71 3436.97 770.91 3763.35 770.96 3919.41 933.21 3932.68 933.21'/%3E%3Cpolyline class='cls-1' points='.6 636.09 5 632.22 307.03 632.26 609.08 632.31 911.14 632.35 1213.23 632.4 1515.32 632.44 1817.43 632.49 2119.55 632.53 2421.7 632.58 2723.85 632.62 3026.03 632.67 3328.21 632.71 3630.42 632.76 3932.65 632.8 3932.68 632.8'/%3E%3Cpolyline class='cls-1' points='.6 632.22 5 632.22 140.39 513.14 421.6 513.18 702.83 513.22 984.06 513.26 1265.32 513.3 1546.58 513.34 1827.86 513.38 2109.16 513.42 2390.46 513.46 2671.78 513.5 2953.12 513.54 3234.47 513.57 3515.83 513.61 3797.2 513.65 3932.65 632.8'/%3E%3C/svg%3E");
-            background-color: #a7a7a7d7;
-            z-index: 2;
+    }
+    .section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .menu {
+        position: fixed;
+        
+        right: 0;
+        
+        height: 50px;
+        background: var(--color-bg-light);
+        z-index: 200;
+        border-radius: 3em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 3%;
+        left: 5%;
+        width: 90%;
+        font-size: 12px;
+        @media (min-width: 50em) {
+            left: 10%;
+            width: 80%;
+            font-size: 16px;
+            
         }
-        .parallax-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, #1e3c72, #2a5298); /* Same gradient background */
-            z-index: 1;
+        
+    }
+
+    .menu a {
+        color: var(--scope-text);
+        margin: 0 8px;
+        @media (min-width: 50em) {
+            margin: 0 15px;
         }
-    </style>
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .menu a:hover {
+        text-decoration: underline;
+    }
+    .m-hidden {
+        display: none;
+        @media (min-width: 50em) {
+            display: block;
+        }
+    }
+    #panels-container {
+        height: 100vh;
+        display: flex;
+        width: 500%; /* Ensure this matches the number of panels */
+        overflow: hidden;
+    }
+
+    .panel {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-bg-accent-light);
+        
+        flex: none;
+        position: relative;
+        z-index: 90;
+    }
+
+    .panel:nth-child(odd) {
+        background-color: var(--scope-primary);
+    }
+
+
+    .panel::before, .panel::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 60px;
+        background: inherit; /* Match the panel's background color */
+        z-index: 95; /* Ensure it's above the panel content */
+        transform: skewX(-3deg); /* Create the slanted effect */
+    }
+
+    .panel::before {
+        left: -25px; /* Adjust to position on the left */
+        transform-origin: left;
+    }
+
+    .panel::after {
+        right: -25px; /* Adjust to position on the right */
+        transform-origin: right;
+    }
+
+    .image-sequence {
+        position: fixed;
+        left: 15%;
+        bottom: -4%;
+        height: 50vw;
+        @media (min-width: 50em) {
+            bottom: -10%;
+            height: 20vw;
+        }
+        transform: translate(-50%, -50%);
+        
+        width: auto;
+        pointer-events: none;
+        z-index: 100; /* Ensure it stays above the background but behind the foreground */
+    }
+
+    #welcome, #end {
+        position: relative;
+        background-color: var(--scope-gradients-dark-color-left);
+        z-index: 150; 
+    }
+
+    #welcome #liquid-edge {
+        position: absolute;
+        bottom: -150px;
+        left: -5%;
+        width: 110%;
+        height: 152px; /* Adjust as needed */
+        /* transform: rotate(180deg); */
+    }
+
+    #end #liquid-edge {
+        position: absolute;
+        top: -148px;
+        left: -5%;
+        width: 110%;
+        height: 151px; /* Adjust as needed */
+        transform: rotate(180deg);
+    }
+
+    #liquid-edge path {
+        fill: var(--scope-text);
+    }
+
+    .scroll-down {
+        position: absolute;
+        bottom: 30px; /* Distance from the bottom of the screen */
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        z-index: 150; /* Ensure it's above the background */
+        font-size: 18px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .scroll-icon {
+        font-size: 24px;
+        margin-top: 10px;
+        animation: bounce 1.5s infinite; /* A simple bounce animation */
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+    }
+
+    .hotspot {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background-color: var(--color-accent);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: transform 0.2s ease-out;
+        cursor: pointer;
+        box-shadow: 0px 0px 10px var(--scope-gradients-dark-color-left);
+        z-index: 10; /* Ensure it's above the pulse circle */
+    }
+
+    .hotspot:hover {
+        background-color: var(--color-red);
+        transition: all .15s ease-in;
+    }
+
+    .hotspot::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 50px;
+        height: 50px;
+        border: 1px solid rgba(255, 0, 0, 1);
+        background-color: rgba(255, 0, 0, 0.75); /* Semi-transparent red */
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+        z-index: -1; /* Place behind the hotspot */
+        animation: pulse 2s infinite;
+    }
+
+    .hotspot-center {
+        left: 50%;
+        top: 50%;
+    }
+
+    .hotspot-left {
+        left: 25%;
+        top: 50%;
+    }
+
+    .hotspot-right {
+        left: 75%;
+        top: 50%;
+    }
+
+    .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        width: 60%;
+        height: 60%;
+        border-radius: 10px;
+        z-index: 250; /* Higher than menu */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        color: black; /* To ensure text is visible */
+    }
+
+    .popup-content {
+        position: relative;
+    }
+
+    .popup .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+/* PROGRESS BAR */
+    .progress-bar {
+        position: fixed;
+        bottom: 10%; /* Adjust as needed */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%; /* Adjust the width as needed */
+        height: 6px;
+        background-color: var(--color-bg-light); /* Light gray background */
+        border-radius: 6px;
+        z-index: 99; /* Ensure it's above other content */
+    }
+    .progress-fill {
+        height: 100%;
+        background-color: var(--color-red); /* Primary color */
+        border-radius: 6px;
+        width: 0%; /* Start with 0% width */
+    }
+    
+    .dot {
+        position: absolute;
+        top: -5px; /* Adjust to center on the bar */
+        width: 10px;
+        /* opacity: 0; */
+        height: 10px;
+        background-color: var(--scope-primary); /* White dots */
+        border: 2px solid var(--color-bg-accent-light); /* Primary color for the border */
+        border-radius: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .dot-1 {
+        left: 0%;
+    }
+    
+    .dot-2 {
+        left: 25%;
+    }
+    
+    .dot-3 {
+        left: 50%;
+    }
+    
+    .dot-4 {
+        left: 75%;
+    }
+    
+    .dot-5 {
+        left: 100%;
+    }
+
+</style>
+
 </head>
+
 <body>
 
-    <div class="parallax-bg"></div>
-    <div class="floor"></div>
+    <div class="menu">
+        <a href="#welcome" class="anchor m-hidden">Welcome</a>
+        <a href="#panel-1" class="anchor">Consultation</a>
+        <a href="#panel-2" class="anchor">Exam Room</a>
+        <a href="#panel-3" class="anchor">Back Office</a>
+        <a href="#panel-4" class="anchor">Treatment</a>
+        <a href="#panel-5" class="anchor">Conclusion</a>
+        <a href="#end" class="anchor m-hidden">End</a>
+    </div>
+
+    <div id="welcome" class="section">
+        <h1>Welcome</h1>
+        <div class="scroll-down">
+            <span>Scroll Down</span>
+            <div class="scroll-icon">&#x25BC;</div> <!-- Down Arrow Icon -->
+        </div>
+        <!-- SVG for the liquid edge -->
+        <svg id="liquid-edge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path d="M719.94,33.97c-225.37-1.73-446.27-2.02-663.38-21.16C36.27,9.86,5.63,8.29,0,0l1440,2.65c-5.28,8.18-36.75,9.81-56.6,12.6-217.26,18.34-437.99,17.82-663.46,18.72Z" fill="#FFD700"></path> 
+        </svg>
+    </div>
+
+    <div id="panels">
+        <div id="panels-container">
+            <div id="panel-0" class="panel">
+                
+            </div>
+            <div id="panel-1" class="panel">
+                <div class="panel-content"><h1>Consultation</h1></div>
+                <div class="hotspot hotspot-left" data-popup-content="This is popup content for Panel 1, Hotspot 1"></div>
+                <div class="hotspot hotspot-right" data-popup-content="This is popup content for Panel 1, Hotspot 2"></div>
+            </div>
+            <div id="panel-2" class="panel">
+                <div class="panel-content"><h1>Exam Room</h1></div>
+                <div class="hotspot hotspot-left" data-popup-content="This is popup content for Panel 2, Hotspot 1"></div>
+                <div class="hotspot hotspot-right" data-popup-content="This is popup content for Panel 2, Hotspot 2"></div>
+            </div>
+            <div id="panel-3" class="panel">
+                <div class="panel-content"><h1>Back Office</h1></div>
+                <div class="hotspot hotspot-left" data-popup-content="This is popup content for Panel 3, Hotspot 1"></div>
+                <div class="hotspot hotspot-right" data-popup-content="This is popup content for Panel 3, Hotspot 2"></div>
+            </div>
+            <div id="panel-4" class="panel">
+                <div class="panel-content"><h1>Treatment</h1></div>
+                <div class="hotspot hotspot-left" data-popup-content="This is popup content for Panel 4, Hotspot 1"></div>
+                <div class="hotspot hotspot-right" data-popup-content="This is popup content for Panel 4, Hotspot 2"></div>
+            </div>
+            <div id="panel-5" class="panel">
+                <div class="panel-content"><h1>Conclusion</h1></div>
+                <div class="hotspot hotspot-left" data-popup-content="This is popup content for Panel 5, Hotspot 1"></div>
+                <div class="hotspot hotspot-right" data-popup-content="This is popup content for Panel 5, Hotspot 2"></div>
+            </div>
+            <div id="panel-6" class="panel">
+            </div>
+        </div>
+    </div>
+
+    <div id="end" class="section">
+        <!-- SVG for the liquid edge -->
+        <svg id="liquid-edge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path d="M719.94,33.97c-225.37-1.73-446.27-2.02-663.38-21.16C36.27,9.86,5.63,8.29,0,0l1440,2.65c-5.28,8.18-36.75,9.81-56.6,12.6-217.26,18.34-437.99,17.82-663.46,18.72Z" fill="#FFD700"></path> 
+        </svg>
+        <h1>End Screen</h1>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+        <span class="close">&times;</span>
+        <div id="popup-text"></div>
+        </div>
+    </div>
+
     <img id="image-sequence" class="image-sequence" src="woman-walking/woman_00.png" alt="Walking Woman">
 
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+        <div class="dot dot-1"></div>
+        <div class="dot dot-2"></div>
+        <div class="dot dot-3"></div>
+        <div class="dot dot-4"></div>
+        <div class="dot dot-5"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/ScrollToPlugin.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/MorphSVGPlugin3.min.js"></script>
+
     <script>
-        const imageSequence = document.getElementById('image-sequence');
-        const parallaxBg = document.querySelector('.parallax-bg');
-        const totalFrames = 35; // Updated to 35 frames
-        const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, MorphSVGPlugin);
+
+        gsap.to("#welcome #liquid-edge path", {
+            scrollTrigger: {
+            trigger: "#welcome",
+            start: "top top",
+            end: "bottom top",
+            scrub: true
+            },
+            morphSVG: {
+            shape: "M719.63,201.03c-225.36-8.45-446.25-8.15-663.19-123.18C36.18,60,5.56,50.68,0,0l1440,2.65c-5.36,50.07-36.84,60.36-56.72,77.63-217.44,114.24-438.17,113.12-663.65,120.75Z"
+            },
+            ease: "power1.inOut",
+            duration: 4
+        });
     
-        let currentFrame = 0;
-        let lastScrollTop = 0;
-    
-        function updateFrame() {
-            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
-    
-            // Check if the user is at the bottom or top of the page and reset scroll
-            if (scrollTop >= maxScrollTop - 1) {
-                window.scrollTo(0, 1);  // Jump back to the top when reaching the bottom
-            } else if (scrollTop <= 0) {
-                window.scrollTo(0, maxScrollTop - 2);  // Jump to the bottom when reaching the top
+        gsap.to("#end #liquid-edge path", {
+            scrollTrigger: {
+            trigger: "#panel-6",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            // markers: true
+            },
+            morphSVG: {
+            shape: "M719.63,201.03c-225.36-8.45-446.25-8.15-663.19-123.18C36.18,60,5.56,50.68,0,0l1440,2.65c-5.36,50.07-36.84,60.36-56.72,77.63-217.44,114.24-438.17,113.12-663.65,120.75Z"
+            },
+            ease: "power1.inOut",
+            duration: 4
+        });
+
+        let panelsContainer = document.querySelector("#panels-container"),
+            panels = gsap.utils.toArray(".panel"),
+            progressFill = document.querySelector(".progress-fill"),
+            tween;
+
+        tween = gsap.to(panels, {
+            xPercent: -100 * (panels.length - 1),
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#panels-container",
+                pin: true,
+                start: "top top",
+                scrub: 1,
+                end: () => "+=" + (panelsContainer.offsetWidth - innerWidth),
+                onEnter: () => {
+                    gsap.to(".image-sequence", { display: 'block', duration: 0 });
+                },
+                onLeave: () => {
+                    gsap.to(".image-sequence", { display: 'block', duration: 0 });
+                },
+                onUpdate: (self) => {
+                    updateFrame(self);
+                    updateProgressBar(self.progress);
+                }
             }
-    
-            const scrollFraction = scrollTop / maxScrollTop;
-            let newFrameIndex = Math.floor(scrollFraction * totalFrames);
-    
-            // Loop the frame index to create a seamless loop
-            newFrameIndex = newFrameIndex % totalFrames;
-    
+        });
+
+        function updateProgressBar(progress) {
+            const percentage = Math.round(progress * 100);
+            progressFill.style.width = `${percentage}%`;
+        }
+
+        const imageSequence = document.getElementById('image-sequence');
+        const totalFrames = 35;
+        const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
+
+        let currentFrame = 0;
+
+        function updateFrame(scrollTrigger) {
+            const scrollDistance = scrollTrigger.progress * (panelsContainer.scrollWidth - window.innerWidth);
+            const maxScrollDistance = panelsContainer.scrollWidth - window.innerWidth;
+            const newFrameIndex = Math.floor((scrollDistance / maxScrollDistance) * (totalFrames - 1));
+
             if (newFrameIndex !== currentFrame) {
                 currentFrame = newFrameIndex;
                 imageSequence.src = framePath(currentFrame);
             }
-    
-            // Move the background to create parallax effect
-            const parallaxSpeed = -0.5; // Adjust the speed of the parallax effect
-            parallaxBg.style.backgroundPositionX = `${scrollTop * parallaxSpeed}px`;
-    
-            requestAnimationFrame(updateFrame);
         }
-    
-        window.addEventListener('load', () => {
-            updateFrame();
+
+        document.querySelectorAll(".anchor").forEach(anchor => {
+            anchor.addEventListener("click", function(e) {
+                e.preventDefault();
+                let targetElem = document.querySelector(e.target.getAttribute("href")),
+                    y = targetElem;
+
+                if (targetElem && panelsContainer.isSameNode(targetElem.parentElement)) {
+                    let totalScroll = tween.scrollTrigger.end - tween.scrollTrigger.start,
+                        totalMovement = (panels.length - 1) * targetElem.offsetWidth;
+                    y = Math.round(tween.scrollTrigger.start + (targetElem.offsetLeft / totalMovement) * totalScroll);
+                }
+
+                gsap.to(window, {
+                    scrollTo: {
+                        y: y,
+                        autoKill: false
+                    },
+                    duration: 3
+                });
+            });
         });
+
+        document.querySelectorAll('.hotspot').forEach(hotspot => {
+            gsap.to(hotspot, {
+                scale: 2,
+                scrollTrigger: {
+                    trigger: hotspot,
+                    start: "center center",
+                    end: "center center",
+                    scrub: true
+                }
+            });
+
+            hotspot.addEventListener('click', function() {
+                const popup = document.getElementById('popup');
+                const popupText = document.getElementById('popup-text');
+                popupText.innerHTML = this.getAttribute('data-popup-content');
+                gsap.to(popup, { display: 'block', opacity: 1, duration: 0.5 });
+            });
+        });
+
+        document.querySelector('.popup .close').addEventListener('click', function() {
+            const popup = document.getElementById('popup');
+            gsap.to(popup, { display: 'none', opacity: 0, duration: 0.5 });
+        });
+
+        document.querySelector('.scroll-down').addEventListener('click', function() {
+            gsap.to(window, {
+                scrollTo: {
+                    y: "#panel-1",
+                    autoKill: false
+                },
+                duration: 1
+            });
+        });
+
     </script>
-    
+
 </body>
 </html>

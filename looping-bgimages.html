@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Sequence Scroll with Parallax</title>
+    <style>
+        body {
+            margin: 0;
+            height: 12000px; /* Adjust based on content */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000; /* Fallback background color */
+            background-attachment: fixed;
+        }
+
+        .image-sequence {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 40vw;
+            width: auto;
+            z-index: 100; /* Ensure it stays above the background but behind the foreground */
+        }
+
+        .floor {
+            height: 31%;
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            background-color: #a7a7a70f;
+            z-index: 150; /* Adjust as needed to stay on top */
+        }
+
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%; /* Double the width to allow for continuous scrolling */
+            height: 100%;
+            background-size: cover;
+            background-repeat: repeat-x; /* Make the background repeat horizontally */
+            z-index: -1;
+            background-image: url('parallax-bg/bg_reception-lg.png'); /* Use the long image */
+        }
+
+        .parallax-foreground {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%; /* Double the width to match the background */
+            height: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: 110; /* Ensure it stays above the image sequence but below the floor */
+            background-image: url('parallax-bg/bg_reception-lg_top.png'); /* Foreground layer */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="parallax-bg" id="parallax-bg"></div>
+    <div class="parallax-foreground" id="parallax-foreground"></div>
+    <div class="floor"></div>
+    <img id="image-sequence" class="image-sequence" src="woman-walking/woman_00.png" alt="Walking Woman">
+
+    <script>
+        const imageSequence = document.getElementById('image-sequence');
+        const parallaxBg = document.getElementById('parallax-bg');
+        const parallaxForeground = document.getElementById('parallax-foreground');
+        const totalFrames = 35;
+        const framePath = (index) => `woman-walking/woman_${String(index).padStart(2, '0')}.png`;
+
+        let currentFrame = 0;
+        let lastScrollTop = 0;
+
+        function updateFrame() {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
+
+            // Check if the user is at the bottom or top of the page and reset scroll
+            if (scrollTop >= maxScrollTop - 1) {
+                window.scrollTo(0, 1);  // Jump back to the top when reaching the bottom
+            } else if (scrollTop <= 0) {
+                window.scrollTo(0, maxScrollTop - 2);  // Jump to the bottom when reaching the top
+            }
+
+            const scrollFraction = scrollTop / maxScrollTop;
+            let newFrameIndex = Math.floor(scrollFraction * totalFrames);
+
+            // Loop the frame index to create a seamless loop
+            newFrameIndex = newFrameIndex % totalFrames;
+
+            if (newFrameIndex !== currentFrame) {
+                currentFrame = newFrameIndex;
+                imageSequence.src = framePath(currentFrame);
+            }
+
+            // Move the background to create the sliding effect
+            const parallaxSpeed = -0.1; // Adjust the speed of the parallax effect
+            parallaxBg.style.backgroundPositionX = `${scrollTop * parallaxSpeed}px`;
+
+            // Move the foreground at a different speed for parallax effect
+            const foregroundParallaxSpeed = -0.2; // Slightly different speed for depth effect
+            parallaxForeground.style.backgroundPositionX = `${scrollTop * foregroundParallaxSpeed}px`;
+
+            requestAnimationFrame(updateFrame);
+        }
+
+        window.addEventListener('load', () => {
+            updateFrame();
+        });
+    </script>
+
+</body>
+</html>

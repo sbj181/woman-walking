@@ -1,0 +1,320 @@
+:root {
+    /* Primary Colors */
+    --scope-text: #003b5c; /* Scope Text-Color for Text/Paragraphs */
+    --scope-primary: #008fb4; /* Primary colors */
+
+    /* Gradients */
+    --scope-gradients-dark-color-left: #003b5c; /* Dark Gradient - Left */
+    --scope-gradients-dark-color-right: #008fb4; /* Dark Gradient - Right */
+
+    /* Additional Colors */
+    --color-bg-light: #f5f6fa; /* Background Light */
+    --color-gray-dark: #595454; /* Dark Gray */
+    --color-red: #dc3545; /* Accent (Red) */
+    --color-accent: #f26425; /* Accent (Orange) */
+    --color-bg-accent-light: #d3e6ef; /* Accent Light (Background) */
+
+    /* Custom Color */
+    --bmspurple: #be2bbb; /* BMS Purple */
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', Arial, sans-serif, sans-serif;
+  background-color: var(--scope-gradients-dark-color-left);
+  color: white;
+  overflow-x: hidden;
+}
+
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu {
+  position: fixed;
+  top: 3%;
+  left: 10%;
+  right: 0;
+  width: 80%;
+  height: 50px;
+  background: var(--color-bg-light);
+  z-index: 200;
+  border-radius: 3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu a {
+  color: var(--scope-text);
+  margin: 0 15px;
+  text-decoration: none;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+#panels-container {
+  height: 100vh;
+  display: flex;
+  width: 500%; /* Ensure this matches the number of panels */
+  overflow: hidden;
+}
+
+.panel {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-accent-light);
+  
+  flex: none;
+  position: relative;
+  z-index: 90;
+  
+}
+
+.panel:nth-child(odd) {
+  background-color: var(--scope-primary);
+}
+
+
+.panel::before, .panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    background: inherit; /* Match the panel's background color */
+    z-index: 95; /* Ensure it's above the panel content */
+    transform: skewX(-3deg); /* Create the slanted effect */
+}
+
+.panel::before {
+    left: -25px; /* Adjust to position on the left */
+    transform-origin: left;
+}
+
+.panel::after {
+    right: -25px; /* Adjust to position on the right */
+    transform-origin: right;
+}
+
+
+
+
+.image-sequence {
+    position: fixed;
+    bottom: -10%;
+    left: 15%;
+    transform: translate(-50%, -50%);
+    height: 20vw;
+    width: auto;
+    pointer-events: none;
+    z-index: 100; /* Ensure it stays above the background but behind the foreground */
+}
+
+#welcome, #end {
+  position: relative;
+  background-color: var(--scope-gradients-dark-color-left);
+  z-index: 150; 
+}
+
+#welcome #liquid-edge {
+    position: absolute;
+    bottom: -150px;
+    left: -5%;
+    width: 110%;
+    height: 152px; /* Adjust as needed */
+    /* transform: rotate(180deg); */
+}
+
+#end #liquid-edge {
+    position: absolute;
+    top: -148px;
+    left: -5%;
+    width: 110%;
+    height: 151px; /* Adjust as needed */
+    transform: rotate(180deg);
+}
+
+#liquid-edge path {
+    fill: var(--scope-text);
+}
+
+.scroll-down {
+    position: absolute;
+    bottom: 30px; /* Distance from the bottom of the screen */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 150; /* Ensure it's above the background */
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.scroll-icon {
+    font-size: 24px;
+    margin-top: 10px;
+    animation: bounce 1.5s infinite; /* A simple bounce animation */
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+.hotspot {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease-out;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px var(--scope-gradients-dark-color-left);
+    z-index: 10; /* Ensure it's above the pulse circle */
+}
+
+.hotspot:hover {
+    background-color: var(--color-red);
+    transition: all .15s ease-in;
+}
+
+.hotspot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(255, 0, 0, 1);
+    background-color: rgba(255, 0, 0, 0.75); /* Semi-transparent red */
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+    z-index: -1; /* Place behind the hotspot */
+    animation: pulse 2s infinite;
+}
+
+.hotspot-center {
+    left: 50%;
+    top: 50%;
+}
+
+.hotspot-left {
+    left: 25%;
+    top: 50%;
+}
+
+.hotspot-right {
+    left: 75%;
+    top: 50%;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    width: 60%;
+    height: 60%;
+    border-radius: 10px;
+    z-index: 250; /* Higher than menu */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: black; /* To ensure text is visible */
+}
+
+.popup-content {
+    position: relative;
+}
+
+.popup .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+    position: fixed;
+    bottom: 10%; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; /* Adjust the width as needed */
+    height: 6px;
+    background-color: var(--color-bg-light); /* Light gray background */
+    border-radius: 6px;
+    z-index: 99; /* Ensure it's above other content */
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background-color: var(--color-red); /* Primary color */
+    border-radius: 6px;
+    width: 0%; /* Start with 0% width */
+  }
+  
+  .dot {
+    position: absolute;
+    top: -5px; /* Adjust to center on the bar */
+    width: 10px;
+    /* opacity: 0; */
+    height: 10px;
+    background-color: var(--scope-primary); /* White dots */
+    border: 2px solid var(--color-bg-accent-light); /* Primary color for the border */
+    border-radius: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .dot-1 {
+    left: 0%;
+  }
+  
+  .dot-2 {
+    left: 25%;
+  }
+  
+  .dot-3 {
+    left: 50%;
+  }
+  
+  .dot-4 {
+    left: 75%;
+  }
+  
+  .dot-5 {
+    left: 100%;
+  }
+  
